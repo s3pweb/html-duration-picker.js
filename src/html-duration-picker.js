@@ -5,13 +5,14 @@
  * html-duration-picker.js
  *
  * @description Turn an html input box to a duration picker, without jQuery
- * @version __RELEASE_VERSION__
+ * @version custom
  * @author Chif <nadchif@gmail.com>
+ * @author addwyn.lelann <addwyn.lelann@s3pweb.com>
  * @license Apache-2.0
  *
  */
 
- export default (function () {
+export default (function () {
   // IE9+ support forEach:
   if (window.NodeList && !window.NodeList.prototype.forEach) {
     NodeList.prototype.forEach = Array.prototype.forEach;
@@ -141,9 +142,9 @@
     // if (typeof Event === 'function') {
     //   return new Event(type, option);
     // } else {
-      const event = document.createEvent('Event');
-      event.initEvent(type, option.bubbles, option.cancelable);
-      return event;
+    const event = document.createEvent('Event');
+    event.initEvent(type, option.bubbles, option.cancelable);
+    return event;
     // }
   };
 
@@ -154,9 +155,14 @@
    * @param {Boolean} dispatchSyntheticEvents whether to manually fire 'input' and 'change' event for other event listeners to get it
    * @param {Number} adjustmentFactor the adjustment factor in seconds
    */
-  const insertFormatted = (inputBox, secondsValue, dispatchSyntheticEvents, adjustmentFactor = 1) => {
+  const insertFormatted = (
+    inputBox,
+    secondsValue,
+    dispatchSyntheticEvents,
+    adjustmentFactor = 1,
+  ) => {
     const hideSeconds = shouldHideSeconds(inputBox);
-    const formattedValue = secondsToDuration(secondsValue, hideSeconds);
+    const formattedValue = secondsToDuration(secondsValue, hideSeconds, inputBox);
     const existingValue = inputBox.value;
     // Don't use setValue method here because
     // it breaks the arrow keys and arrow buttons control over the input
@@ -305,15 +311,20 @@
    * Converts seconds to a duration string
    * @param {value} value
    * @param {Boolean} hideSeconds
+   * @param {*} inputBox
    * @return {String}
    */
-  const secondsToDuration = (value, hideSeconds) => {
+  const secondsToDuration = (value, hideSeconds, inputBox) => {
     let secondsValue = value;
     const hours = Math.floor(secondsValue / 3600);
     secondsValue %= 3600;
     const minutes = Math.floor(secondsValue / 60);
     const seconds = secondsValue % 60;
-    const formattedHours = String(hours).padStart(2, '0');
+    let formattedHours = String(hours).padStart(2, '0');
+    if (inputBox != null) {
+      const {maxDuration} = getMinMaxConstraints(inputBox);
+      formattedHours = String(hours).padStart(maxDuration > 36000 ? 2 : 1, '0');
+    }
     const formattedMinutes = String(minutes).padStart(2, '0');
     const formattedSeconds = String(seconds).padStart(2, '0');
     return hideSeconds
@@ -433,8 +444,8 @@
       event.target,
       durationToSeconds(event.target.value),
     );
-    if (event.target.value != secondsToDuration(constrainedValue, hideSeconds)) {
-      event.target.value = secondsToDuration(constrainedValue, hideSeconds);
+    if (event.target.value != secondsToDuration(constrainedValue, hideSeconds, event.target)) {
+      event.target.value = secondsToDuration(constrainedValue, hideSeconds, event.target);
     }
   };
 
@@ -592,6 +603,9 @@
     const {maxDuration} = getMinMaxConstraints(inputBox);
     const maxHourInput = Math.floor(maxDuration / 3600);
     const charsForHours = maxHourInput < 1 ? 0 : maxHourInput.toString().length;
+    if (cursorSelection === 'hours' && event.key > maxHourInput) {
+      event.preventDefault();
+    }
     if (
       (cursorSelection === 'hours' && content.length >= charsForHours) ||
       sectioned[0].length < charsForHours
