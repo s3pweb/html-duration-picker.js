@@ -157,21 +157,21 @@ describe('Duration Picker', () => {
     });
 
     it('should set min value to duration if duration not defined', () => {
-      expect(testPicker.value).toEqual('00:30:00');
+      expect(testPicker.value).toEqual('0:30:00');
     });
 
     it('should set min value if value is lower min value', () => {
       testPicker.focus();
       testPicker.value = '00:29:00';
       testPicker.blur();
-      expect(testPicker.value).toEqual('00:30:00');
+      expect(testPicker.value).toEqual('0:30:00');
     });
 
     it('should set max value if value is greater max value', () => {
       testPicker.focus();
       testPicker.value = '00:35:00';
       testPicker.blur();
-      expect(testPicker.value).toEqual('00:31:00');
+      expect(testPicker.value).toEqual('0:31:00');
     });
   });
 

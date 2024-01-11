@@ -13,7 +13,6 @@
   padding: 0 4px;
   border: none;
   cursor: default;
-  position: absolute;
 }
 
 .html-duration-picker-input-controls-wrapper .caret {
@@ -33,10 +32,14 @@
 }
 
 .html-duration-picker-input-controls-wrapper .controls {
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
   position: absolute;
-  top: 1px;
-  padding: 2px 0;
+  width: 16px;
+  z-index: 1;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 4px;
 }
 
 .html-duration-picker-input-controls-wrapper {

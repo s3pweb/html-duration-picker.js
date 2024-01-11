@@ -177,7 +177,6 @@ export default (function () {
       inputBox.dispatchEvent(createEvent('input'));
     }
     inputBox.setAttribute('data-adjustment-factor', adjustmentFactor);
-    console.log({adjustmentFactor});
     highlightTimeUnitArea(inputBox, adjustmentFactor);
   };
 
@@ -681,25 +680,6 @@ export default (function () {
     getInputFields.forEach((inputBox) => {
       // Set the default text and apply some basic styling to the duration picker
       if (!(inputBox.getAttribute('data-upgraded') == 'true')) {
-        const currentInputBoxStyle = inputBox.currentStyle || window.getComputedStyle(inputBox);
-        const inputBoxRightMargin = currentInputBoxStyle.marginRight;
-        const inputBoxLeftMargin = currentInputBoxStyle.marginLeft;
-        const inputBoxRightBorder = parseFloat(currentInputBoxStyle.borderRight);
-        const inputBoxLeftBorder = parseFloat(currentInputBoxStyle.borderLeft);
-        const inputBoxRightPadding = parseFloat(currentInputBoxStyle.paddingRight);
-        const inputBoxLeftPadding = parseFloat(currentInputBoxStyle.paddingLeft);
-        let totalInputBoxWidth;
-        const currentInputBoxWidth = parseFloat(currentInputBoxStyle.width);
-        if (currentInputBoxStyle.boxSizing === 'content-box') {
-          totalInputBoxWidth =
-            currentInputBoxWidth +
-            inputBoxRightBorder +
-            inputBoxLeftBorder +
-            inputBoxRightPadding +
-            inputBoxLeftPadding;
-        } else {
-          totalInputBoxWidth = currentInputBoxWidth;
-        }
         inputBox.setAttribute('data-upgraded', true);
         inputBox.setAttribute('data-adjustment-factor', 3600);
         const hideSeconds = shouldHideSeconds(inputBox);
@@ -744,15 +724,10 @@ export default (function () {
         scrollDownBtn.setAttribute('aria-label', 'Decrease duration');
 
         // set inline-styles for positioning
-        scrollUpBtn.setAttribute(
-          'style',
-          `height:${inputBox.offsetHeight / 2 - 1}px !important; top: 1px;`,
-        );
+        scrollUpBtn.setAttribute('style', `height:${inputBox.offsetHeight / 2 - 1}px !important;`);
         scrollDownBtn.setAttribute(
           'style',
-          `height:${inputBox.offsetHeight / 2 - 1}px !important; top: ${
-            inputBox.offsetHeight / 2 - 1
-          }px;`,
+          `height:${inputBox.offsetHeight / 2 - 1}px !important;`,
         );
 
         // Create the carets in the buttons. These can be replaced by images, font icons, or text.
@@ -831,13 +806,6 @@ export default (function () {
         // set css classes
         controlsDiv.setAttribute('class', 'controls');
 
-        // set inline styles
-        controlsDiv.setAttribute(
-          'style',
-          `left: ${totalInputBoxWidth - 20}px;
-        height:${inputBox.offsetHeight}px;`,
-        );
-
         // Add buttons to controls div
         controlsDiv.appendChild(scrollUpBtn);
         controlsDiv.appendChild(scrollDownBtn);
@@ -847,11 +815,6 @@ export default (function () {
 
         // set css classes
         controlWrapper.setAttribute('class', 'html-duration-picker-input-controls-wrapper');
-        // set inline styles
-        controlWrapper.setAttribute(
-          'style',
-          `width: ${totalInputBoxWidth}px; margin-left: ${inputBoxLeftMargin}; margin-right: ${inputBoxRightMargin};`,
-        );
         // add the div just before the picker
         inputBox.parentNode.insertBefore(controlWrapper, inputBox);
         // move the picker into the wrapper div
